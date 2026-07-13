@@ -293,6 +293,15 @@ function showApp(){
   document.getElementById('app').style.display = '';
   loadData();
 }
+async function doLogout(){
+  await supabaseClient.auth.signOut();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('authResetGate').style.display = 'none';
+  document.getElementById('authGate').querySelector('div').style.display = '';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+}
 function authErr(msg){
   const el = document.getElementById('authError');
   el.textContent = msg; el.style.display = msg ? 'block' : 'none';
@@ -579,13 +588,15 @@ function backToDashboard(){
 
 function renderTopbarActions(){
   const el = document.getElementById('topbarActions');
+  const logoutBtn = '<button class="btn small" id="logoutBtn">Logout</button>';
   if(view==='dashboard'){
-    el.innerHTML = `<div class="overall-badge">${programmes.length} programme${programmes.length===1?'':'s'}</div>`;
+    el.innerHTML = `<div class="overall-badge">${programmes.length} programme${programmes.length===1?'':'s'}</div>${logoutBtn}`;
   } else {
     const rec = programmes.find(p=>p.id===currentId);
     const done = rec ? stages.filter(s=>isStageComplete(rec,s)).length : 0;
-    el.innerHTML = `<div class="overall-badge" id="overallBadge">${done} / ${stages.length} stages complete</div>`;
+    el.innerHTML = `<div class="overall-badge" id="overallBadge">${done} / ${stages.length} stages complete</div>${logoutBtn}`;
   }
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
 }
 
 /* ---------- COMPLETION LOGIC ---------- */
